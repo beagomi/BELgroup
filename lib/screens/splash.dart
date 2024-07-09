@@ -14,7 +14,7 @@ class Splash extends StatelessWidget {
   // Method for navigation SplashPage -> LoginPage
   void _toLoginPage(BuildContext context) {
     Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: ((context) => Login())));
+        MaterialPageRoute(builder: ((context) => const Login())));
   } //_toHomePage
 
 // Method for navigation SplashPage -> HomePage
@@ -36,10 +36,9 @@ class Splash extends StatelessWidget {
       await provider.getDataFromWeek(day); 
       _toHomePage(context);
 
-    //if not, get data from the past week and go to the login page         
+    //if not, go to the login page (there: if credentials are correct --> get tokens --> go to loading page--> go to home page )       
     } else {
       _toLoginPage(context);
-      await provider.getDataFromWeek(day);
     }
   } //_checkLogin 
 

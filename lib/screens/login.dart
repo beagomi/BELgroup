@@ -1,8 +1,10 @@
 
 import 'package:flutter/material.dart';
-import 'package:my_project/screens/home.dart';
+import 'package:my_project/screens/home_widgets/loading_screen.dart';
 import 'package:my_project/utils/impact.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+//LOGIN WITH WAITING 
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -15,7 +17,7 @@ class _LoginState extends State<Login> {
   static bool _passwordVisible = false;
   final TextEditingController userController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController dobController = TextEditingController(); 
+  final TextEditingController dobController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final Impact impact = Impact();
 
@@ -101,15 +103,12 @@ class _LoginState extends State<Login> {
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        // Based on passwordVisible state choose the icon
                         _passwordVisible
                             ? Icons.visibility
                             : Icons.visibility_off,
                         color: Colors.grey,
                       ),
-                      onPressed: () {
-                        _showPassword();
-                      },
+                      onPressed: _showPassword,
                     ),
                     hintText: 'Password',
                   ),
@@ -140,34 +139,29 @@ class _LoginState extends State<Login> {
                   ),
                 ),
                 const SizedBox(height: 15),
-
-                //button to log in 
                 Align(
                   alignment: Alignment.center,
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: ElevatedButton(
                       onPressed: () async {
-                        //if username and password are correct get and store the tokens
                         if (_formKey.currentState!.validate()) {
                           final result = await impact.getAndStoreTokens(
                               userController.text, passwordController.text);
 
-                          //save username, password and DOB (used for data elaboration) in SP
                           if (result == 200) {
                             final sp = await SharedPreferences.getInstance();
                             await sp.setString('username', userController.text);
                             await sp.setString('password', passwordController.text);
-                            await sp.setString('dob', dobController.text); 
+                            await sp.setString('dob', dobController.text);
 
-                            //go to the home page
-                            Navigator.of(context).pushReplacement(
+                            
+                            Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => const Home(),
-                              ),
-                            );
+                                builder: (context) => const LoadingScreen(),
+                                ),
+                              );
 
-                          //wrong username or password   
                           } else {
                             ScaffoldMessenger.of(context)
                               ..removeCurrentSnackBar()
@@ -201,7 +195,6 @@ class _LoginState extends State<Login> {
     );
   }
 
-  //used to select DOB
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
@@ -210,8 +203,9 @@ class _LoginState extends State<Login> {
         lastDate: DateTime.now());
     if (picked != null) {
       setState(() {
-        dobController.text = picked.toIso8601String().split('T')[0]; // properly format dob
+        dobController.text = picked.toIso8601String().split('T')[0];
       });
     }
   }
 }
+
