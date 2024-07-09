@@ -38,8 +38,8 @@ class Splash extends StatelessWidget {
 
     //if not, get data from the past week and go to the login page         
     } else {
-      await provider.getDataFromWeek(day);
       _toLoginPage(context);
+      await provider.getDataFromWeek(day);
     }
   } //_checkLogin 
 

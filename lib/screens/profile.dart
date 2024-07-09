@@ -309,7 +309,7 @@ class _ProfileState extends State<Profile> {
             TextButton(
               child: const Text("Yes"),
               onPressed: () {
-                _logout(context); // do log out --> delete username and psw from SP and go to login 
+                _logout(context); // do log out --> delete SP and go to login 
               },
             ),
           ],
@@ -320,8 +320,7 @@ class _ProfileState extends State<Profile> {
 
   void _logout(BuildContext context) async {
     final sp = await SharedPreferences.getInstance();
-    await sp.remove("username");
-    await sp.remove("password");
+    await sp.clear();
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: ((context) => const Login()))
     );
