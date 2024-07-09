@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-
+//page that is horizontally scrollable, explains important aspects of rest index 
 class Info extends StatefulWidget {
+  //stateful to manage which page is shown
   const Info({super.key});
 
   @override
@@ -43,7 +44,7 @@ class _InfoState extends State<Info> {
               },
               children: [
                 InfoPage(
-                  imagePath: 'assets/intro.JPG', // Replace this with your image path
+                  imagePath: 'assets/intro.JPG', 
                   title: 'Training and Rest',
                   sections: [
                     Section(
@@ -61,7 +62,7 @@ class _InfoState extends State<Info> {
                   ],
                 ),
                 InfoPage(
-                  imagePath: 'assets/train.JPG', // Replace this with your image path
+                  imagePath: 'assets/train.JPG', 
                   title: 'Factors Influencing Rest Index',
                   sections: [
                     Section(
@@ -83,7 +84,7 @@ class _InfoState extends State<Info> {
                   ],
                 ),
                 InfoPage(
-                  imagePath: 'assets/rest1.JPG', // Replace this with your image path
+                  imagePath: 'assets/rest1.JPG', 
                   title: 'Tips for Optimal Recovery',
                   sections: [
                     Section(
@@ -126,7 +127,7 @@ class _InfoState extends State<Info> {
     );
   }
 }
-
+//each InfoPage (3 in total) has an image, a title, and some sections 
 class InfoPage extends StatelessWidget {
   final String imagePath;
   final String title;
@@ -180,7 +181,7 @@ class InfoPage extends StatelessWidget {
                 Expanded(
                   child: Text(
                     section.text,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Colors.black54,
                     ),
@@ -195,6 +196,7 @@ class InfoPage extends StatelessWidget {
   }
 }
 
+//each section has an icon and a text 
 class Section {
   final IconData icon;
   final String text;

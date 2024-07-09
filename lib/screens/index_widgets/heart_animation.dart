@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+//widget showing an heart beating and the mean fc of the day
 class HeartBeat extends StatelessWidget {
   final int averageHeartRate;
 
@@ -12,10 +13,13 @@ class HeartBeat extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Image.asset('assets/giphy-2.gif'),
-          SizedBox(height: 5), // Spazio tra l'animazione e il testo
+          const SizedBox(height: 5),
           Text(
             'Average Heart Rate: $averageHeartRate bpm',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'CustomFont'),
+            style: const TextStyle(
+              fontSize: 14, 
+              fontWeight: FontWeight.bold, 
+              fontFamily: 'CustomFont'),
           ),
         ],
       ),

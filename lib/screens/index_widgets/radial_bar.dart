@@ -4,6 +4,8 @@ import 'package:my_project/utils/data_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+//chart to show the sleep efficiency of the day and the intensity of the exercise session/s of the day
+//both from 0 to 100
 class RadialBar extends StatefulWidget {
   const RadialBar({super.key});
 
@@ -19,14 +21,14 @@ class _RadialBarState extends State<RadialBar> with SingleTickerProviderStateMix
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: Duration(seconds: 2), // Durata dell'animazione
+      duration: const Duration(seconds: 2), 
       vsync: this,
     );
     _animation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
     );
-    _animationController.forward(); // Inizia l'animazione
+    _animationController.forward(); //start the animation
   }
 
   @override
@@ -42,14 +44,16 @@ class _RadialBarState extends State<RadialBar> with SingleTickerProviderStateMix
       animation: _animation,
       builder: (context, child) {
         return SfCircularChart(
-          legend: Legend(isVisible: true, overflowMode: LegendItemOverflowMode.wrap),
+          legend: const Legend(
+            isVisible: true, 
+            overflowMode: LegendItemOverflowMode.wrap),
           tooltipBehavior: TooltipBehavior(enable: true),
           series: <CircularSeries>[
             RadialBarSeries<GDPData, String>(
               dataSource: getChartData(dataProvider),
               xValueMapper: (GDPData data, _) => data.type,
-              yValueMapper: (GDPData data, _) => data.gdp * _animation.value, // Animazione dei valori
-              dataLabelSettings: DataLabelSettings(isVisible: true),
+              yValueMapper: (GDPData data, _) => data.gdp * _animation.value, 
+              dataLabelSettings: const DataLabelSettings(isVisible: true),
               enableTooltip: true,
               maximumValue: 100,
             ),

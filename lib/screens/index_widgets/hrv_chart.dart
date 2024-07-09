@@ -3,15 +3,14 @@ import 'package:my_project/utils/data_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-
+//graph showing heart rate variability of the day
 class HRVChart extends StatelessWidget {
-
 
   @override
   Widget build(BuildContext context) {
     var dataProvider = Provider.of<DataProvider>(context);
 
-    //get HRV data from provider
+    //get HRV data from provider (there is an apposite function to calculate it)
     final List<double> time = List.generate(dataProvider.hrList.length, (index) => index.toDouble());
     final List<double> hrv = dataProvider.hrList;
 
@@ -19,7 +18,7 @@ class HRVChart extends StatelessWidget {
       body: Center(
         child: Container(
           height: 300,
-          margin: EdgeInsets.all(16),
+          margin: const EdgeInsets.all(16),
           child: SfCartesianChart(
             primaryXAxis: const NumericAxis(
               title: AxisTitle(text: 'Time'), // X-axis label
@@ -78,11 +77,10 @@ class HRVChart extends StatelessWidget {
                   ),
                   child: Text(
                     'Time: ${data.x} s\nHRV: ${data.y}',
-                    style: TextStyle(color: Colors.black),
+                    style: const TextStyle(color: Colors.black),
                   ),
                 );
               }, 
-              //animationDuration: 2000,
             ),
             enableAxisAnimation: true,
           ),

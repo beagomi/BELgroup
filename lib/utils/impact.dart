@@ -1,5 +1,3 @@
-
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,22 +5,14 @@ import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:intl/intl.dart';
 
-
-//SharedPreferences sp = await SharedPreferences.getInstance();
-//String? username = sp.getString('username');
-//String? password = sp.getString('password');
-
-
-
 class DayData {
-    late final List<double> hrList;  //lista frequenza cardiaca ogni 5 sec
-    late final double fcRest; //freq cardiaca a riposo
+    late final List<double> hrList;  //list of fc every 5 seconds
+    late final double fcRest; //fc at rest 
     late final double sleepEff; //sleep efficiency 
-    List<Map<String, dynamic>> exercisesOfDay;
+    List<Map<String, dynamic>> exercisesOfDay; //all the exercises of the day
 
     DayData({required this.exercisesOfDay, required this.sleepEff, required this.fcRest, required this.hrList});
-  } //DayData --> ciò che restituirà il metodo GetDataFromDay
-
+  } //DayData --> what is returned from "getDataFromDay"
 
 
 class Impact{
@@ -33,10 +23,6 @@ class Impact{
   static String refreshEndpoint = 'gate/v1/refresh/';
   static String patientUsername = 'Jpefaq6m58';
     
-  //USERNAME E PASSWORD SALVATI NEL LOGIN NELLE SP
-  //static String username = 'DTmzvjaLL8';
-  //static String password = '12345678!';
-
   static String sleepEndpoint = 'data/v1/sleep/patients/';
   static String exerciseEndpoint = 'data/v1/exercise/patients/';
   static String fcRestEndpoint = 'data/v1/resting_heart_rate/patients/';
@@ -44,20 +30,6 @@ class Impact{
 
 
   //METHODS
-  //This method allows to check if the IMPACT backend is up
-  Future<bool> isImpactUp() async {
-    //Create the request
-    final url = Impact.baseUrl + Impact.pingEndpoint;
-
-    //Get the response
-    print('Calling: $url');
-    final response = await http.get(Uri.parse(url));
-
-    //Just return if the status code is OK
-    return response.statusCode == 200;
-  } //_isImpactUp
-
-
     
     //This method allows to obtain the JWT token pair from IMPACT and store it in SharedPreferences
   Future<int> getAndStoreTokens(String username, String password) async {
@@ -110,12 +82,13 @@ class Impact{
     return 401;
   } //_refreshTokens
 
-//FORSE NON SERVE A NIENTE
+
 //This method checks if the saved token is still valid:
 //if the token doesn't exist, returns FALSE
 //if it exists, it tries to see if it is valid using Impact.checkToken
 //if it is valid, returns TRUE
 //if it is not, it returns false
+
   Future<bool> checkSavedToken({bool refresh = false}) async {
     final sp = await SharedPreferences.getInstance();
     final token = sp.getString(refresh ? 'refresh' : 'access');
@@ -131,7 +104,7 @@ class Impact{
     }
   }//_checkSavedTokens
 
-  //FORSE NON SERVE A NIENTE
+  //used in checkSavedTokens
   static bool checkToken(String token) {
     //Check if the token is expired
     if (JwtDecoder.isExpired(token)) {
@@ -140,10 +113,10 @@ class Impact{
     return true;
     
   } //_checkToken
+  
 
-
-  //This method allows to obtain the JWT token pair from IMPACT and store it in SharedPreferences
-  //usata quando anche il refresh token è expired e devo prendere i dati
+  //checks if the user is authorized (if the username and password are valid)
+  //obtains the JWT token pair from IMPACT and stores it in SharedPreferences
   static Future<int?> authorize() async {
     //Create the request
     final url = Impact.baseUrl + Impact.tokenEndpoint;
@@ -175,6 +148,7 @@ class Impact{
     return response.statusCode;
   } //_authorize
 
+
 //This method prepares the Bearer header for the calls
   Future<Map<String, String>> getBearer() async {
     if (!await checkSavedToken()) {
@@ -187,32 +161,17 @@ class Impact{
   }//_getBearer
 
 
- //per vedere se il paziente è attivo sul server 
-  Future<void> getPatient() async {
-    var header = await getBearer();
-    final r = await http.get(
-        Uri.parse('${Impact.baseUrl}study/v1/patients/active'),
-        headers: header);
-
-    final decodedResponse = jsonDecode(r.body);
-    final sp = await SharedPreferences.getInstance();
-
-    sp.setString('impactPatient', decodedResponse['data'][0]['username']);
-  }//_get<Patient
-
-  //metodo per prendere i dati del giorno 
-  ///SLEEP --> efficiency: 1 entrata/giorno
-  ///ALLENAMENTO --> average heart rate, active calories, total duration: 3 entrate per ogni allenamento del giorno (anche più di uno)
-  ///FC RIPOSO --> solo un valore e noi prendiamo quello: 1 entrata/giorno
-  ///HEART RATE --> 1 valore ogni 5 secondi, li prendiamo tutti e poi ne tiriamo fuori HRV
-  
+//metodo per prendere i dati del giorno 
+///SLEEP --> efficiency: 1 entrata/giorno
+//ALLENAMENTO --> average heart rate, active calories, total duration: 3 entrate per ogni allenamento del giorno (anche più di uno)
+//FC RIPOSO --> solo un valore e noi prendiamo quello: 1 entrata/giorno
+//HEART RATE --> 1 valore ogni 5 secondi, li prendiamo tutti e poi ne tiriamo fuori HRV
   
 //function to get the data of the day of interest
   static Future<DayData> getDataFromDay(DateTime day) async {
     //format the DateTime to a String in 'YYYY-MM-DD' format
     final String formattedDay = DateFormat('yyyy-MM-dd').format(day);
 
-    //get the stored token (THIS DOESN'T WORK IF TOKENS ARE NULL!!) --> manage it
     final sp = await SharedPreferences.getInstance();
     var access = sp.getString('access');
     var refresh = sp.getString('refresh');
@@ -226,12 +185,10 @@ class Impact{
 
     //to manage if the refresh token is expired 
       if(JwtDecoder.isExpired(refresh!)) {
-      await Impact.authorize(); //qui sta già salvando nuovo access e refresh nelle SP
+      await Impact.authorize(); //gets and stores tokens in the SP
       access = sp.getString('access');
       refresh = sp.getString('refresh');
     } //if
-    print(sp.getString('access'));
-    print(sp.getString('refresh'));
 
 
     //SLEEP REQUEST --> output: sleepEff (double)
@@ -262,7 +219,6 @@ class Impact{
             sleepEff = sleepData[0]['efficiency'].toDouble();
             }
           }
-      //print(sleepEff);
     }
 
     //EXERCISE REQUEST --> output: exerciseType (string), hrExercise (double), calExercise (double), durationExercise (double)
@@ -278,20 +234,18 @@ class Impact{
     List<Map<String, dynamic>> exercisesOfDay = [];
     if (responseExercise.statusCode == 200) {
       resultE = jsonDecode(responseExercise.body);
-      //print(resultE);
-      //print(resultE['data']);
 
-      //se i dati sono presenti itero dentro le ActivityType (possono essere più di una) e le salvo 
-      //altrimenti ritorna una lista standard che rappresenta una giornata senza attività 
+      //if there are data, iter inside ActivityType (can be more than one) and save them into a list
       if (resultE['data'].isNotEmpty) {
       List<dynamic> activities = resultE['data']['data'];
-      //List<List<Map<String, dynamic>>> exercisesOfDay = [];
+
       activities.forEach((activity) {
         String activityType = activity['activityName'];
         double averageHR = activity['averageHeartRate'].toDouble();
         double calories = activity['calories'].toDouble();
         double duration = activity['duration'].toDouble();
-        //creo la mappa corrispondente all'attività di questa iterazione
+
+        //create the map corresponding to this iteration (if I have one run and one walk I will have two maps)
         Map<String, dynamic> activityMap = {
             'exerciseType': activityType,
             'hr': averageHR,
@@ -300,8 +254,9 @@ class Impact{
           };
         exercisesOfDay.add(activityMap);
       }); //for
-      } //if activity is not empty
+      } 
 
+      //if no activities in the day
       else {
         Map<String, dynamic> activityMap = {
             'exerciseType': 'rest',
@@ -311,8 +266,7 @@ class Impact{
           };
           exercisesOfDay.add(activityMap);
       }
-      print('exercises of day are');
-      print(exercisesOfDay);
+      print('exercises of day are $exercisesOfDay');
     } //if 
 
 
@@ -338,8 +292,6 @@ class Impact{
           print(resultFcR);
           fcRest = resultFcR['data']['data']['value'].toDouble();
         }
-
-      //print('fc rest is: $fcRest');
     }
 
     //HR REQUEST --> output: hrList (list)
@@ -357,7 +309,7 @@ class Impact{
       print(responseHR.statusCode);
       resultHR = jsonDecode(responseHR.body);
 
-      //in ogni giorno ci sono dati sicuramente ma itero non considerando i valori null
+      //iter through heart rates of the day without considering null values 
       if (resultHR != null && resultHR['data'] != null && resultHR['data']['data'] != null) {
       //iterando inserisco i valori in una lista
       List<dynamic> dataList = resultHR['data']['data'];
@@ -366,11 +318,9 @@ class Impact{
           double value = (data['value'] as num).toDouble();
           hrList.add(value);
           }
-        }//for 
-      } //if
-      //print('hr of the day are: $hrList');
-
-    }//if
+        }
+      } 
+    }
 
     
     return DayData( 
@@ -382,28 +332,11 @@ class Impact{
 
     } //_getDataFromDay
     
-    /*
-    //function to get data from the last 7 days (FROM LAST DAY TO FIRST ONE)
+
+//function to get data from the last 7 days 
     static Future<List<DayData>> getDataFromWeek(DateTime day) async {
     final List<DayData> weekData = [];
-    final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
 
-    for (int i = 0; i < 7; i++) { 
-      final DateTime currentday = day.subtract(Duration(days: i));
-      final DayData dayData = await getDataFromDay(currentday);
-      weekData.add(dayData);
-    }
-
-    //returns a list containing all the data of the 7 previous day
-    return weekData;
-    
-}//_getDataFromWeek
-*/
-
-//function to get data from the last 7 days (FROM FIRST DAY TO LAST ONE es da 28 giungo a 4 luglio)
-    static Future<List<DayData>> getDataFromWeek(DateTime day) async {
-    final List<DayData> weekData = [];
-    final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
 
     for (int i = 7; i >= 1; i--) { 
       final DateTime currentday = day.subtract(Duration(days: i));
@@ -412,7 +345,7 @@ class Impact{
     }
 
     //returns a list containing all the data of the 7 previous day
-    //now will be data starting from further day until those closer (from 28 june to 4 july)
+    //now will be data starting from further day until those closer (day = 5 july --> list with data from 28 june to 4 july)
     return weekData;
     
 }//_getDataFromWeek

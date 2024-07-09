@@ -1,90 +1,7 @@
 import 'package:flutter/material.dart';
 
-
-/*
-class ShowIndex extends StatelessWidget {
-  final int computedIndex;
-
-  const ShowIndex({Key? key, required this.computedIndex}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    Color textColor;
-    String message;
-    IconData icon;
-
-    if (computedIndex <= 50) {
-      textColor = Colors.red;
-      message = "You look very tired, take some rest";
-      icon = Icons.sentiment_very_dissatisfied;
-    } else if (computedIndex <= 75) {
-      textColor = Colors.orange;
-      message = "You're doing well, but try to take a break";
-      icon = Icons.sentiment_neutral;
-    } else {
-      textColor = Colors.green;
-      message = "Great job! Keep it up, you're doing fantastic";
-      icon = Icons.sentiment_very_satisfied;
-    }
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: textColor, width: 2),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 40,
-                color: textColor,
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Rest Index: $computedIndex",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      message,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10),
-          LinearProgressIndicator(
-            value: computedIndex / 100,
-            backgroundColor: textColor.withOpacity(0.3),
-            valueColor: AlwaysStoppedAnimation<Color>(textColor),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-*/
-
+//box that shows the rest index (number + LinearProgressorIndicator) + a short text and an icon based on it
+//contains also an info button that tells what is the index (AlertDialog)
 
 class ShowIndex extends StatelessWidget {
   final int computedIndex;
@@ -96,15 +13,14 @@ class ShowIndex extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          //title: Text("Rest Index Information"),
-          content: Text(
+          content: const Text(
             "The Rest Index is a measure of your current physical state. "
             "A lower index indicates higher tiredness and the need for rest, "
             "while a higher index suggests you are less tired and managing stress well.",
           ),
           actions: [
             TextButton(
-              child: Text("OK"),
+              child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -117,6 +33,7 @@ class ShowIndex extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //they're different based on the index value (3 types of settings)
     Color textColor;
     String message;
     IconData icon;
@@ -136,12 +53,12 @@ class ShowIndex extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: textColor, width: 2),
       ),
-      //to place the icon of top of the other things
+      //to place the icon on top of the other things
       child: Stack(
         children: [
           //to place the icon where I want 
@@ -164,7 +81,7 @@ class ShowIndex extends StatelessWidget {
                     size: 40,
                     color: textColor,
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,7 +97,7 @@ class ShowIndex extends StatelessWidget {
                         SizedBox(height: 5),
                         Text(
                           message,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             color: Colors.black87,
                           ),
@@ -190,7 +107,7 @@ class ShowIndex extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               LinearProgressIndicator(
                 value: computedIndex / 100,
                 backgroundColor: textColor.withOpacity(0.3),

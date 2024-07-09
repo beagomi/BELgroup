@@ -6,7 +6,10 @@ import 'package:my_project/screens/profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_project/screens/home_widgets/datesBis.dart';
 
-//HOME PAGE WITH "HELLO, NOME UTENTE DELLE SP"
+//HOME PAGE WITH "HELLO, *NOME UTENTE DELLE SP*" AND PROFILE ICON: if the user added a nickname he's called using that, 
+//otherwise it's "hello user"
+
+//stateful to manage the state of the nickname 
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -15,7 +18,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String _username = 'User'; // Nome di default
+  String _username = 'User'; // default name 
 
   @override
   void initState() {
@@ -26,7 +29,7 @@ class _HomeState extends State<Home> {
   void _loadUsername() async {
     final sp = await SharedPreferences.getInstance();
     setState(() {
-      _username = sp.getString('name') ?? 'User'; // Carica il nome salvato o utilizza un valore di default
+      _username = sp.getString('name') ?? 'User'; // uploads the name saved in SP if present otherwise uses the default name ("user")
     });
   }
 
@@ -42,14 +45,14 @@ class _HomeState extends State<Home> {
               children: [
                 SizedBox(width: 10),
                 Text(
-                  '  Hello, $_username :)', // Mostra il nome caricato
+                  '  Hello, $_username :)', // shows the username (user or nickname, based on the SP)
                   style: TextStyle(
                     fontSize: 30,
                     color: Colors.indigo[600],
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                Expanded(child: Container()), // Separatore
+                Expanded(child: Container()), 
                 IconButton(
                   icon: Icon(
                     Icons.supervised_user_circle_rounded,
@@ -57,7 +60,7 @@ class _HomeState extends State<Home> {
                     size: 40,
                   ),
                   onPressed: () async {
-                    // go to the profile page and wait for the result 
+                    // go to the profile page and wait for the result (the user could change the nickname, so we need to adjust it)
                     final updatedUsername = await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => Profile()),
@@ -65,7 +68,7 @@ class _HomeState extends State<Home> {
 
                     if (updatedUsername != null) {
                       setState(() {
-                        _username = updatedUsername; // Update the name when you go back
+                        _username = updatedUsername; // Update the name when you go back (the user could change it)
                       });
                     }
                     else {
@@ -80,15 +83,15 @@ class _HomeState extends State<Home> {
             SizedBox(height: 30),
             
             //widgets created in the folder home_widgets
+            //clickable dates box: if clicked they lead to index page
             DatesBis(),
             SizedBox(height: 20),
+            //small description of the following graph + CircularProgressIndicator if the data is loading
             Description(),
+            //shows weekly trend of rest index 
             LineGraph(),
-            //Info(),
-            ComputeIndex(), //questo è il bottone che se schiacciato passa alla schermata dell'indice
-                            //una volta schiacciato dovrà anche prendere i dati del giorno coì appena mi si
-                            //apre la schermata dell'indice avrò già i grafici aggiornati e tutto 
-                            //(grazie al fatto che i grafici ascoltano perchè sono sotto un consumer del provider)
+            //button that, if pressed, leads to the index page where index of today and its widgets are shown
+            ComputeIndex(), 
           ],
         ),
       ),

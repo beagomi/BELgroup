@@ -4,53 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:my_project/utils/data_provider.dart';
 
-/*
-class LineGraph extends StatelessWidget {
-  const LineGraph({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<DataProvider>(
-      builder: (context, dataProvider, child) {
-
-        DateTime startDate = dataProvider.startDate;
-        List weekIndex = dataProvider.weekindex;
-
-        List<List<dynamic>> chartData = [];
-        DateTime date = startDate;
-
-        for (int i = 0; i < weekIndex.length; i++) {
-          chartData.add([date.day, weekIndex[i]]);
-          date = date.add(Duration(days: 1));
-        }
-
-        return Expanded(
-          child: SizedBox(
-            width: double.infinity,
-            child: SfCartesianChart(
-              tooltipBehavior: TooltipBehavior(enable: true),
-              primaryXAxis: NumericAxis(title: AxisTitle(text: 'Date')),
-              primaryYAxis: NumericAxis(title: AxisTitle(text: 'Rest Index')),
-              series: [
-                LineSeries(
-                  dataSource: chartData,
-                  xValueMapper: (data, index) => data[0],
-                  yValueMapper: (data, index) => data[1],
-                  markerSettings: MarkerSettings(isVisible: true),
-                  dataLabelSettings: DataLabelSettings(isVisible: true),
-                  color: Colors.indigo[600],
-                  name: 'Rest Index on the selected date',
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-*/
-
+//main graph of the home page, it shows the weekly trend of the rest index 
 class LineGraph extends StatelessWidget {
   const LineGraph({super.key});
 
@@ -60,7 +14,9 @@ class LineGraph extends StatelessWidget {
       builder: (context, dataProvider, child) {
         List<Map<String, dynamic>> chartData = [];
 
-        DateTime startDate = dataProvider.startDate.subtract(Duration(days:7));
+        //start date in the provider keeps track of the considered day, the line graph shows from that day until the 7th previous day (the previous week)
+        DateTime startDate = dataProvider.startDate.subtract(const Duration(days:7));
+        //weekindex it's the list of indexes given in output by the "getDataFromWeek" function (what is shown in this graph)
         List weekIndex = dataProvider.weekindex;
 
         // adds dates and indexes to chartData
@@ -76,18 +32,18 @@ class LineGraph extends StatelessWidget {
             child: SfCartesianChart(
               tooltipBehavior: TooltipBehavior(enable: true),
               primaryXAxis: DateTimeAxis(
-                title: AxisTitle(text: 'Date'),
+                title: const AxisTitle(text: 'Date'),
                 dateFormat: DateFormat.MMMd(), // date format for x axis
                 intervalType: DateTimeIntervalType.days, 
               ),
-              primaryYAxis: NumericAxis(title: AxisTitle(text: 'Rest Index')),
+              primaryYAxis: const NumericAxis(title: AxisTitle(text: 'Rest Index')),
               series: [
                 LineSeries<Map<String, dynamic>, DateTime>(
                   dataSource: chartData,
                   xValueMapper: (data, _) => data['date'] as DateTime,
                   yValueMapper: (data, _) => data['index'] as double,
-                  markerSettings: MarkerSettings(isVisible: true),
-                  dataLabelSettings: DataLabelSettings(isVisible: true),
+                  markerSettings: const MarkerSettings(isVisible: true),
+                  dataLabelSettings: const DataLabelSettings(isVisible: true),
                   color: Colors.indigo[600],
                   name: 'Rest Index on the selected date',
                 ),

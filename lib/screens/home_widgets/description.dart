@@ -22,12 +22,13 @@ class Description extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 16.0),
+          //listens to the data provider and eventually it shows that the data is loading
           Consumer<DataProvider>(
             builder: (context, dataProvider, child) {
               if (dataProvider.isLoading) {
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               } else {
-                return Container(); // Ritorna un contenitore vuoto quando non è in caricamento
+                return Container(); // returns an empty container when data is not loading 
               }
             },
           ),

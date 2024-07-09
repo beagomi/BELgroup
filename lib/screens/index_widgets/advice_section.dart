@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+//based on the computed index, shows a different set of advices (3 sets: below 50, between 51 and 75, over 76)
+//takes the index as input
 class AdviceSection extends StatelessWidget {
   final int computedIndex;
 
@@ -37,10 +39,10 @@ class AdviceBox extends StatelessWidget {
     List<Advice> advices = _getAdvices(computedIndex);
 
   return Container(
-      height: 400, // Altezza aumentata per i box
+      height: 400, // advice box height
       child: PageView.builder(
-        physics: const PageScrollPhysics(), // Disabilita lo scroll a metà
-        pageSnapping: true, // Assicura che si sposti completamente a un riquadro alla volta
+        physics: const PageScrollPhysics(), // scroll from one advice to the other one
+        pageSnapping: true, // do it without stopping in between
         itemCount: advices.length,
         itemBuilder: (context, index) {
           return _buildAdviceItem(context, advices[index]);
@@ -49,16 +51,17 @@ class AdviceBox extends StatelessWidget {
     );
   }
 
+  //it builts the box made up by an image and a text
   Widget _buildAdviceItem(BuildContext context, Advice advice) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.8, // 80% della larghezza dello schermo
-      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      width: MediaQuery.of(context).size.width * 0.8, // 80% of the screen width
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            constraints: BoxConstraints(
-              maxHeight: 250, // Altezza massima per l'immagine
+            constraints: const BoxConstraints(
+              maxHeight: 250, // max height for the images 
             ),
             decoration: BoxDecoration(
               color: Colors.indigo[200],
@@ -72,7 +75,7 @@ class AdviceBox extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
@@ -91,7 +94,7 @@ class AdviceBox extends StatelessWidget {
   }
 
 
-
+  //sets of advices based on the index 
   List<Advice> _getAdvices(int index) {
     if (index <= 50) {
       return [
@@ -119,39 +122,12 @@ class AdviceBox extends StatelessWidget {
         Advice(imagePath: 'assets/stressManagement.JPG', text:  "Keep calm and meditate on! Practice yoga, deep breathing, or mindfulness to stay zen."),
       ];
     }
-  }
+  } //list<Advice>
 
-  Widget _buildAdviceBox(Advice advice) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.indigo[200],
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            advice.imagePath,
-            width: 80,
-            height: 80,
-          ),
-          SizedBox(height: 10),
-          Text(
-            advice.text,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
+}//AdviceBox
+
+//each advice is made of an image and a text
 class Advice {
   final String imagePath;
   final String text;

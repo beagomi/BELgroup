@@ -9,6 +9,7 @@ import 'package:my_project/screens/index_widgets/show_index.dart';
 import 'package:my_project/utils/data_provider.dart';
 import 'package:provider/provider.dart';
 
+//the page showing everything about the computed index and its widgets
 
 class Index extends StatelessWidget {
   const Index({super.key});
@@ -17,7 +18,7 @@ class Index extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'REST INDEX INSIGHTS',
           style: TextStyle(
             fontWeight: FontWeight.bold,
@@ -29,8 +30,9 @@ class Index extends StatelessWidget {
       ),
       body: Consumer<DataProvider>(
         builder: (context, dataProvider, child) {
+          //in the provider we always know the state of the fetching, based on that show the CircularProgressIndicator
           if (dataProvider.isLoading) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else {
             if (!dataProvider.hasData) {
               return _buildNoDataView();
@@ -42,8 +44,6 @@ class Index extends StatelessWidget {
       ),
     );
   }
-
-
 
   //what is shown if there are no data for the day
   Widget _buildNoDataView() {
@@ -62,76 +62,33 @@ class Index extends StatelessWidget {
     );
   }
 
-  Future<void> _loadData(BuildContext context) async {
-    final dataProvider = Provider.of<DataProvider>(context, listen: false);
-    await dataProvider.getDataFromDay(DateTime.now());
-  }
-
   //what is shown if there are data
   Widget _buildContent(BuildContext context) {
     var dataProvider = Provider.of<DataProvider>(context);
-    int computedIndex = dataProvider.index.ceil(); //to bigger int
-    List types = dataProvider.types;
-    //to make them a list o strings, the correct format for the session type widget
-    List<String> activities = types.cast<String>(); 
+    int computedIndex = dataProvider.index.ceil(); //to bigger int 
     int hr = dataProvider.fcRest.toInt();
 
-    /*
-    return SingleChildScrollView(
-      physics: AlwaysScrollableScrollPhysics(),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(height: 20),
-          Container(child: ShowIndex(computedIndex: computedIndex)),
-          SizedBox(height: 20),
-          Container(child: AdviceSection(computedIndex: computedIndex)),
-          
-          Container(
-            height: 300,
-            width: 300,
-            child: 
-                RadialBar(),
-          ),
-          Container(
-            height: 300,
-            child: Padding(
-              padding: EdgeInsets.only(right: 16.0),
-              child: HRVChart(),
-            ),
-          ),
-          SizedBox(height: 20),
-          Container(
-            height: 150,
-            child: SessionType(),
-          ),
-          SizedBox(height: 20),
-          Container(
-            //height: 100,
-            child: HeartBeat(averageHeartRate: hr)
-          ),
-            
-        ],
-      ),
-    );
-  }
-}
-
-*/
+//to make the whole column page scrollable
 return SingleChildScrollView(
-      physics: AlwaysScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 20),
-          Container(child: ShowIndex(computedIndex: computedIndex)),
-          SizedBox(height: 20),
-          Container(child: AdviceSection(computedIndex: computedIndex)),
+          const SizedBox(height: 20),
+          Container(
+            //show the index
+            child: ShowIndex(computedIndex: computedIndex)
+            ),
+          const SizedBox(height: 20),
+          Container(
+            //show the advices 
+            child: AdviceSection(computedIndex: computedIndex)
+            ),
 
 
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -156,19 +113,19 @@ return SingleChildScrollView(
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
             height: 300,
             width: double.infinity,
-            child: RadialBar(),
+            child: const RadialBar(),
           ),
-          SizedBox(height: 2),
+          const SizedBox(height: 2),
           Divider(thickness: 1, color: Colors.grey[300]),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
 
           //SESSION TYPE
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -181,19 +138,19 @@ return SingleChildScrollView(
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
             height: 150,
             width: double.infinity,
             child: SessionType(),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Divider(thickness: 1, color: Colors.grey[300]),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           //HRV
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -206,11 +163,11 @@ return SingleChildScrollView(
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
             height: 300,
             child: Padding(
-              padding: EdgeInsets.only(right: 16),
+              padding: const EdgeInsets.only(right: 16),
               child: HRVChart(),
             ),
           ),
@@ -219,7 +176,7 @@ return SingleChildScrollView(
           Divider(thickness: 1, color: Colors.grey[300]),
           SizedBox(height: 20),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -232,13 +189,13 @@ return SingleChildScrollView(
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
             width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: HeartBeat(averageHeartRate: hr),
           ),
-          SizedBox(height: 40),
+          const SizedBox(height: 40),
         ],
       ),
     );

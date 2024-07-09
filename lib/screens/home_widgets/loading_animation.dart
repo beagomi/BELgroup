@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+//ANIMATION USED IN THE SPLASH PAGE (instead of standard CircularProgressorIndicator)
+//we need it because before going to the home page we have to fetch all week data from the server so we need to wait some time
+
 class LoadingAnimation extends StatefulWidget {
   const LoadingAnimation({super.key});
 

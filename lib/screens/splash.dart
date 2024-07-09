@@ -23,16 +23,17 @@ class Splash extends StatelessWidget {
         .pushReplacement(MaterialPageRoute(builder: (context) => const Home()));
   } //_toHomePage
 
-  //check if the person is still logged in 
+  //check if the person is still logged in, based on that go to the right screen (fetch the week data in any case)
+  //if refresh token is not expired, use it to get another refresh token --> still logged 
   void _checkLogin(BuildContext context) async {
     final result = await Impact.refreshTokens();
     final provider = Provider.of<DataProvider>(context, listen: false);
-    //DateTime day = DateTime.now().subtract(Duration(days: 1)); 
     DateTime day = DateTime.now(); 
 
-    //il he's logged get data of the past week and go to the home page
+    //il he's logged: get data of the past week and go to the home page
     if (result == 200) {
-      await provider.getDataFromWeek(day);
+      //shows week data from yesterday up to 7 days before 
+      await provider.getDataFromWeek(day); 
       _toHomePage(context);
 
     //if not, get data from the past week and go to the login page         
@@ -54,13 +55,15 @@ class Splash extends StatelessWidget {
                 'assets/logo_provvisorio.png',
                 scale: 4),
                 SizedBox(height:40),
+                //animation for loading instead of "CircularProgressorIndicator"
                 const LoadingAnimation(),
                 SizedBox(height: 40),
+                //shows some short expression telling the user to wait and be patient 
                 const RotatingText()
               ]
             ),
         ),
       );
-    } //builder
+    } 
  }
 

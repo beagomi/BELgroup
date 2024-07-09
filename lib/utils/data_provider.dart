@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:my_project/utils/impact.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+
 
 class DataProvider extends ChangeNotifier {
   List<double> hrList = [];
@@ -47,7 +47,7 @@ class DataProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
 
-  //function to update the dates for which data are fetched, used in datesBis in the homePage
+  //function to update the dates for which data are fetched, used in datesBis in the homePage (arrows to go to previous or next 7 days)
   void updateDates(int days) {
     DateTime newStartDate = _startDate.add(Duration(days: days)); 
     DateTime today = DateTime.now();
@@ -59,13 +59,10 @@ class DataProvider extends ChangeNotifier {
     }
     _startDate = newStartDate;
 
-    print("THIS IS START DATE $_startDate");
-
     // Fetch data from the new start date
     getDataFromWeek(_startDate);
     notifyListeners();
   }
-
 
   //to manage if there are no data
   bool _hasData = true; 
@@ -76,7 +73,6 @@ class DataProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     
-    Impact impact = Impact();
     final daydata = await Impact.getDataFromDay(day);
 
     if (daydata != null) {
@@ -84,16 +80,12 @@ class DataProvider extends ChangeNotifier {
       //extract the HR list to compute HRV
       hrList = daydata.hrList;
       hrv = calculateHRV(hrList);  //uses the function created below to compute hrv
-      print("hrv is $hrv");
 
       //extract fcRest, will be used in the final index
       fcRest = daydata.fcRest;
-      print("fcRest is $fcRest");
       //extract sleepEff, will be used in the final index
       sleepEff = daydata.sleepEff;
-      print("sleepEff is $sleepEff");
 
-      //NUOVE 4 RIGHE
       fcMeans.clear();
       cals.clear();
       durations.clear();
@@ -113,19 +105,20 @@ class DataProvider extends ChangeNotifier {
         if (type.containsKey("exerciseType")) {
           types.add(type["exerciseType"]);
         }
-      } //for 
+      } 
 
+      //if there are one or more activities in the day compute the intensity (otherwise intensity is 0)
       if (fcMeans.isNotEmpty && cals.isNotEmpty && durations.isNotEmpty) {
         intensity = await calculateIntensity(fcMeans, fcRest, cals, durations);
       } else {
         intensity = 0.0;
       }
-      print("intensity is $intensity");
+      //print("intensity is $intensity");
 
       index = calculateIndex(hrv, fcRest, sleepEff, intensity);
-      print("index is $index");
+      //print("index is $index");
       notifyListeners();
-    } //if 
+    } 
     else {
       _hasData = false;
     }
@@ -147,23 +140,23 @@ class DataProvider extends ChangeNotifier {
   Future<double> calculateIntensity(List fcMeans, double fcRest, List cals, List durations) async {
     age = await calculateAge();
     double minCalIntensity = 2.5; //2.5 kcal per minute --> slow walk 
-    double maxCalIntensity = 15;  //15 kcal per minute --> extremely fast run/cycling
+    double maxCalIntensity = 15;  //15 kcal per minute --> extremely high intensity run/cycling
 
     fcMean = (fcMeans.reduce((a,b) => a+b))/fcMeans.length; //mean of all fcMean of the exercises of day
     cal = (cals.reduce((a,b) => a+b)); //sum of all calories consumed of the exercises of day
     dur = (durations.reduce((a,b) => a+b))/60000; //sum of all durations of the exercises of day (in min instead of ms)
-    print("duration is $dur");
+    //print("duration is $dur");
 
     int fcMax = 220 - age; //estimate of max fc
 
+    //if dur != 0 means that there are exercises in that day (one at least)
     if (dur != 0) {
     double cardiacIntensity = ((fcMean - fcRest) / (fcMax - fcRest)) * 100; //KARVONEN FORMULATION
     double caloricIntensity = (((cal/dur) - minCalIntensity) / (maxCalIntensity - minCalIntensity) ) * 100;
 
-    print(cardiacIntensity);
-    print(caloricIntensity);
-    //double fcIntensity = (fcMean - fcRest) / (fcMax - fcRest); //cardiac intensity
-    //double calIntensity = cal / dur; //caloric intensity
+    //print(cardiacIntensity);
+    //print(caloricIntensity);
+
     double intensity = (cardiacIntensity + caloricIntensity) / 2; //total intensity
 
     return intensity;
@@ -174,14 +167,13 @@ class DataProvider extends ChangeNotifier {
   }
 
 //FUNCTION TO GET DATE OF BIRTH FROM SHARED PREFERENCES AND TO COMPUTE THE AGE
-//MANAGE THE CASE IN WHICH DATE OF BIRTH IS NOT PROVIDED (can happen only if it's the first time starting the app)
 
 Future<int> calculateAge() async {
   final prefs = await SharedPreferences.getInstance();
   String dob = prefs.getString('dob') ?? '';
 
   if (dob.isEmpty) {
-    // manage the case in which dob is not given  
+    // manage the case in which dob is not given (impossible bc given at the first login)
     print("Date of birth not set");
     return 30; // age of the avarage user of the app
   }
@@ -216,7 +208,7 @@ Future<int> calculateAge() async {
   //hrv, sleep efficiency: the higher the faster the recovery (the higher the index)
   //fcRest, intensity: the higher the slower the recovery (the lower the index)
 
-  //the values are normalized based on some standard values for an healty subject found in literature 
+  //the values are normalized based on some standard values for healty subjects found in literature 
   double calculateIndex(double hrv, double fcRest, double sleepEff, double intensity) {
 
     //fcRest was set to 0.0 if no data for the day --> subsitute with average value for healty person (70)
@@ -245,7 +237,6 @@ Future<int> calculateAge() async {
     notifyListeners();
 
     print("FETCHING DATA FROM WEEK STARTING FROM: $day");
-    //Impact impact = Impact();
     final weekdata = await Impact.getDataFromWeek(day);
 
     //reset before adding data from another week
@@ -261,7 +252,6 @@ Future<int> calculateAge() async {
         //extract sleep efficiency
         sleepEffIter = day.sleepEff;
 
-        //NUOVE 4 RIGHE
         fcMeansIter.clear();
         calsIter.clear();
         durationsIter.clear();
@@ -281,10 +271,10 @@ Future<int> calculateAge() async {
           if (type.containsKey("exerciseType")) {
             typesIter.add(type["exerciseType"]);
           }
-        } //for
+        } 
         if (fcMeansIter.isNotEmpty && calsIter.isNotEmpty && durationsIter.isNotEmpty) {
           intensityIter = await calculateIntensity(fcMeansIter, fcRestIter, calsIter, durationsIter);
-          print("INTENSITY ITER IS $intensityIter");
+          //print("INTENSITY ITER IS $intensityIter");
         }
         else {
           intensityIter = 0.0;
@@ -294,7 +284,7 @@ Future<int> calculateAge() async {
           indexIter = 0;
         }
         weekindex.add(indexIter.round());
-        print("INDEX IS $indexIter");
+        //print("INDEX IS $indexIter");
       }
       print(weekindex);
       _isLoading = false;
