@@ -4,7 +4,7 @@ import 'package:my_project/screens/loading_screen.dart';
 import 'package:my_project/utils/impact.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-//LOGIN with waitning screen during fetching of week data
+//LOGIN with waiting screen during fetch of week data
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
