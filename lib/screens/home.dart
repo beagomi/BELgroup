@@ -43,7 +43,7 @@ class _HomeState extends State<Home> {
           children: [
             Row(
               children: [
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Text(
                   '  Hello, $_username :)', // shows the username (user or nickname, based on the SP)
                   style: TextStyle(
@@ -77,21 +77,21 @@ class _HomeState extends State<Home> {
                     }
                   },
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
               ],
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             
             //widgets created in the folder home_widgets
             //clickable dates box: if clicked they lead to index page
-            DatesBis(),
-            SizedBox(height: 20),
+            const DatesBis(),
+            const SizedBox(height: 20),
             //small description of the following graph + CircularProgressIndicator if the data is loading
-            Description(),
+            const Description(),
             //shows weekly trend of rest index 
-            LineGraph(),
+            const LineGraph(),
             //button that, if pressed, leads to the index page where index of today and its widgets are shown
-            ComputeIndex(), 
+            const ComputeIndex(), 
           ],
         ),
       ),

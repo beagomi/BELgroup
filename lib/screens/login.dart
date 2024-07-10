@@ -1,10 +1,10 @@
 
 import 'package:flutter/material.dart';
-import 'package:my_project/screens/home_widgets/loading_screen.dart';
+import 'package:my_project/screens/loading_screen.dart';
 import 'package:my_project/utils/impact.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-//LOGIN WITH WAITING 
+//LOGIN with waitning screen during fetching of week data
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -145,23 +145,26 @@ class _LoginState extends State<Login> {
                     padding: const EdgeInsets.all(12.0),
                     child: ElevatedButton(
                       onPressed: () async {
+                        //if usernamene and password are correct get and store tokens 
                         if (_formKey.currentState!.validate()) {
                           final result = await impact.getAndStoreTokens(
                               userController.text, passwordController.text);
 
+                          //store username and password to stay logged in 
+                          //store date of birth for data elaboration
                           if (result == 200) {
                             final sp = await SharedPreferences.getInstance();
                             await sp.setString('username', userController.text);
                             await sp.setString('password', passwordController.text);
                             await sp.setString('dob', dobController.text);
 
-                            
+                            //go to loading screen, there week data are fetched while a loading animation is shown
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => const LoadingScreen(),
                                 ),
                               );
-
+                          //if username and password are wrong 
                           } else {
                             ScaffoldMessenger.of(context)
                               ..removeCurrentSnackBar()
@@ -195,6 +198,7 @@ class _LoginState extends State<Login> {
     );
   }
 
+  //to select date of birth
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
